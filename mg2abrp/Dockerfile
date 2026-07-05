@@ -24,10 +24,8 @@ RUN apt-get update && \
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
-# Kein eigenes CMD hier! Docker vererbt automatisch das CMD des
-# Basis-Images, wenn nur ein neues ENTRYPOINT gesetzt wird. run.sh
-# uebernimmt dieses ererbte CMD am Ende ueber "exec "$@"" - so muss
-# der interne Skriptname des Gateways hier nicht bekannt sein.
+# ENTRYPOINT + explizites CMD (siehe unten) - run.sh uebernimmt die
+# Werte per "exec "$@"" und startet damit den Original-Befehl.
 ARG BUILD_VERSION=1.0.0
 ARG BUILD_ARCH
 LABEL \
@@ -37,4 +35,10 @@ LABEL \
   io.hass.version=${BUILD_VERSION} \
   io.hass.arch=${BUILD_ARCH}
 
+# Docker-Verhalten (oft missverstanden): Setzt man in einem
+# abgeleiteten Image ein neues ENTRYPOINT, wird ein vom Basis-Image
+# geerbtes CMD NICHT uebernommen, sondern auf leer zuruecksetzt.
+# Deshalb muss der Original-Befehl hier explizit wiederholt werden.
+# (Ermittelt per Registry-API-Abfrage der Basis-Image-Config.)
 ENTRYPOINT [ "/run.sh" ]
+CMD [ "python", "./main.py" ]

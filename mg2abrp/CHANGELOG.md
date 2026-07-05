@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+- Fix: CMD wurde beim Setzen eines eigenen ENTRYPOINT von Docker
+  zurueckgesetzt statt vom Basis-Image geerbt (Docker-Standardverhalten).
+  CMD wird jetzt explizit gesetzt ("python", "./main.py").
+  Das war der Grund fuer den lautlosen Sofort-Exit/Neustart-Loop.
+
 ## 1.0.1
 - Dockerfile auf offizielles Basis-Image umgestellt (saicismartapi/saic-python-mqtt-gateway)
 - PYTHONUNBUFFERED gesetzt, damit Fehler im Log sichtbar werden
