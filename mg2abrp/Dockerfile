@@ -5,6 +5,13 @@
 # https://hub.docker.com/r/saicismartapi/saic-python-mqtt-gateway
 FROM saicismartapi/saic-python-mqtt-gateway:latest
 
+# Das Basis-Image laeuft standardmaessig als Non-Root-User (daher
+# schlug apt-get zuvor mit "Permission denied" fehl). Fuer dieses
+# private Add-on bleiben wir bewusst als root - das Docker-Container-
+# Sandboxing bietet ohnehin die eigentliche Isolation, und so muss
+# der genaue interne Nutzername des Basis-Images nicht bekannt sein.
+USER root
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends jq ca-certificates && \
     rm -rf /var/lib/apt/lists/*
