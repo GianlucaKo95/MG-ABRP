@@ -20,8 +20,9 @@ jobs:
     name: Initialize build
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.matrix }}
+      matrix: ${{ steps.matrix_fixed.outputs.matrix }}
       version: ${{ steps.version.outputs.version }}
+      owner: ${{ steps.owner.outputs.owner }}
     steps:
       - uses: actions/checkout@v6
 
@@ -31,12 +32,30 @@ jobs:
           VERSION=$(grep '^version:' mg2abrp/config.yaml | sed 's/version: *"\(.*\)"/\1/')
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
+      # GitHub gibt den Owner-Namen in Original-Schreibweise zurueck
+      # (z.B. "GianlucaKo95"), Container-Registries verlangen aber
+      # zwingend Kleinschreibung. Daher hier explizit klein schreiben.
+      - name: Determine lowercase owner
+        id: owner
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "owner=${OWNER}" >> "$GITHUB_OUTPUT"
+
       - name: Get build matrix
         id: matrix
         uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.06.0
         with:
           architectures: ${{ env.ARCHITECTURES }}
           image-name: ${{ env.IMAGE_NAME }}
+
+      # Die Action liefert Image-Namen mit dem Owner in Original-
+      # Schreibweise zurueck - hier auf Kleinschreibung korrigieren,
+      # bevor die Matrix an die Build-Jobs weitergegeben wird.
+      - name: Fix image casing in matrix
+        id: matrix_fixed
+        run: |
+          FIXED=$(echo '${{ steps.matrix.outputs.matrix }}' | jq -c '.include |= map(.image |= ascii_downcase)')
+          echo "matrix=${FIXED}" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ matrix.arch }} image
@@ -70,15 +89,26 @@ jobs:
     needs: [init, build]
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       packages: write
     steps:
-      - name: Publish multi-arch manifest
-        uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.06.0
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          architectures: ${{ env.ARCHITECTURES }}
-          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image-name: ${{ env.IMAGE_NAME }}
-          image-tags: |
-            ${{ needs.init.outputs.version }}
-            latest
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Fasst die einzelnen Arch-Images (bereits korrekt in
+      # Kleinschreibung, aus dem build-Job) zu einem Multi-Arch-
+      # Manifest zusammen - unter dem Namen aus mg2abrp/config.yaml
+      # (image: "ghcr.io/gianlucako95/mg2abrp").
+      - name: Create and push multi-arch manifest
+        run: |
+          OWNER="${{ needs.init.outputs.owner }}"
+          VERSION="${{ needs.init.outputs.version }}"
+          for TAG in "${VERSION}" "latest"; do
+            docker buildx imagetools create \
+              --tag "ghcr.io/${OWNER}/${{ env.IMAGE_NAME }}:${TAG}" \
+              "ghcr.io/${OWNER}/amd64-${{ env.IMAGE_NAME }}:${TAG}" \
+              "ghcr.io/${OWNER}/aarch64-${{ env.IMAGE_NAME }}:${TAG}"
+          done
