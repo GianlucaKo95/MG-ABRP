@@ -1,6 +1,6 @@
 # Kein ARG BUILD_FROM mehr - seit Supervisor 2026.04.0 nicht mehr automatisch
 # befuellt. Direktes FROM, python-Images sind ohnehin multi-arch
-# (unterstuetzen amd64/aarch64/armv7 ueber ein Manifest).
+# (unterstuetzen amd64/aarch64 ueber ein Manifest).
 FROM python:3.12-slim-bookworm
 
 RUN apt-get update && \
