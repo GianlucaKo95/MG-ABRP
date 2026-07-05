@@ -74,5 +74,6 @@ if [ -n "$ABRP_USER_TOKEN" ]; then
   echo "[INFO] ABRP Telemetrie aktiv fuer VIN: ${ABRP_VIN}"
 fi
 
-cd /usr/src/app
-exec python3 ./mqtt_gateway.py
+# Kein fest angenommener Skriptname: fuehrt das vom Basis-Image
+# ererbte CMD aus (siehe Dockerfile-Kommentar).
+exec "$@"
