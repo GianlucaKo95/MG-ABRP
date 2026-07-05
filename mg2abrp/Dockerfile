@@ -12,6 +12,11 @@ FROM saicismartapi/saic-python-mqtt-gateway:latest
 # der genaue interne Nutzername des Basis-Images nicht bekannt sein.
 USER root
 
+# Erzwingt unverzoegerte Python-Ausgaben - ohne das koennten Fehler
+# beim Absturz im Ausgabepuffer verschwinden, bevor sie im Log
+# landen (genau das Symptom: keine Fehlermeldung, nur stiller Crash).
+ENV PYTHONUNBUFFERED=1
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends jq ca-certificates && \
     rm -rf /var/lib/apt/lists/*
