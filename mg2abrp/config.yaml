@@ -3,6 +3,7 @@ version: "1.0.0"
 slug: "mg2abrp"
 description: "Sendet SOC/Ladezustand deines MG (via iSMART/SAIC) live an A Better Route Planner"
 url: "https://github.com/GianlucaKo95/mg-abrp-addon"
+image: "ghcr.io/gianlucako95/mg2abrp"
 arch:
   - aarch64
   - amd64
