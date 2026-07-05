@@ -1,5 +1,5 @@
 name: "MG to ABRP Bridge"
-version: "1.0.0"
+version: "1.0.1"
 slug: "mg2abrp"
 description: "Sendet SOC/Ladezustand deines MG (via iSMART/SAIC) live an A Better Route Planner"
 url: "https://github.com/GianlucaKo95/mg-abrp-addon"
