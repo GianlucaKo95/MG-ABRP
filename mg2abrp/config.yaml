@@ -1,7 +1,7 @@
 name: "MG to ABRP Bridge"
-version: "1.0.2"
+version: "1.1.0"
 slug: "mg2abrp"
-description: "Sendet SOC/Ladezustand deines MG (via iSMART/SAIC) live an A Better Route Planner"
+description: "Sendet SOC/Ladezustand deines MG (via iSMART/SAIC) live an A Better Route Planner und optional an Meeterz"
 url: "https://github.com/GianlucaKo95/mg-abrp-addon"
 image: "ghcr.io/gianlucako95/mg2abrp"
 arch:
@@ -24,6 +24,9 @@ options:
   abrp_vin: ""
   abrp_token: ""
   abrp_api_key: ""
+  meeterz_url: ""
+  meeterz_device_id: ""
+  vin: ""
   log_level: "info"
 
 schema:
@@ -36,7 +39,10 @@ schema:
   mqtt_username: str?
   mqtt_password: password?
   ha_discovery: bool
-  abrp_vin: str
-  abrp_token: str
+  abrp_vin: str?
+  abrp_token: str?
   abrp_api_key: str?
+  meeterz_url: str?
+  meeterz_device_id: password?
+  vin: str?
   log_level: list(debug|info|warning|error|critical)

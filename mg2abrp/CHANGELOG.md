@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+- Neu: Live-Daten an Meeterz (Akkustand, Reichweite, Laden, Außentemperatur, Position).
+  Optionen `meeterz_url` und `meeterz_device_id` (beides aus der Meeterz-App: Einstellungen → E-Auto → Live-Daten).
+  Nutzt die OsmAnd-Schnittstelle des Gateways; Geschwindigkeit in km/h.
+- Neu: Option `vin` (falls ABRP nicht genutzt wird; sonst gilt `abrp_vin`).
+- ABRP-Felder sind jetzt optional, damit das Add-on auch nur für Meeterz laufen kann.
+
 ## 1.0.2
 - Fix: CMD wurde beim Setzen eines eigenen ENTRYPOINT von Docker
   zurueckgesetzt statt vom Basis-Image geerbt (Docker-Standardverhalten).

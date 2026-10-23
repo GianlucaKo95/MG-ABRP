@@ -20,6 +20,10 @@ ABRP_VIN=$(get_opt abrp_vin)
 ABRP_TOKEN_VAL=$(get_opt abrp_token)
 ABRP_API_KEY_VAL=$(get_opt abrp_api_key)
 LOG_LEVEL_VAL=$(get_opt log_level)
+MEETERZ_URL=$(get_opt meeterz_url)
+MEETERZ_DEVICE_ID=$(get_opt meeterz_device_id)
+VIN_VAL=$(get_opt vin)
+[ -z "$VIN_VAL" ] && VIN_VAL="$ABRP_VIN"
 
 if [ -z "$SAIC_USERNAME" ] || [ -z "$SAIC_PASSWORD_VAL" ]; then
   echo "[FATAL] saic_username und saic_password muessen in der Add-on Konfiguration gesetzt sein."
@@ -64,6 +68,19 @@ if [ -n "$ABRP_VIN" ] && [ -n "$ABRP_TOKEN_VAL" ]; then
   export ABRP_USER_TOKEN="${ABRP_VIN}=${ABRP_TOKEN_VAL}"
 fi
 [ -n "$ABRP_API_KEY_VAL" ] && export ABRP_API_KEY="$ABRP_API_KEY_VAL"
+
+# Meeterz: Live-Daten ueber die OsmAnd-Schnittstelle des Gateways an die Supabase-Edge-Function
+# "vehicle-telemetry". Die Geraete-ID (aus der Meeterz-App) ist das geheime Token.
+if [ -n "$MEETERZ_URL" ] && [ -n "$MEETERZ_DEVICE_ID" ]; then
+  if [ -z "$VIN_VAL" ]; then
+    echo "[WARN] Meeterz: keine VIN gesetzt (Option 'vin' oder 'abrp_vin') - Live-Daten an Meeterz deaktiviert."
+  else
+    export OSMAND_SERVER_URI="$MEETERZ_URL"
+    export OSMAND_DEVICE_ID="${VIN_VAL}=${MEETERZ_DEVICE_ID}"
+    export OSMAND_USE_KNOTS="False"
+    echo "[INFO] Meeterz Live-Daten aktiv fuer VIN: ${VIN_VAL}"
+  fi
+fi
 
 export LOG_LEVEL="${LOG_LEVEL_VAL^^}"
 

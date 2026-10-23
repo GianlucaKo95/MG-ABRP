@@ -123,3 +123,18 @@ log_level: "info"
   Minuten, wenn ein anderes Gerät sich einloggt)
 - Nutzung erfolgt über nicht offiziell von SAIC/MG dokumentierte
   Endpunkte — für privaten Gebrauch übliches, aber inoffizielles Vorgehen
+
+## Live-Daten an Meeterz (optional)
+
+Die iPhone-/CarPlay-App Meeterz kann Akkustand, Reichweite und Ladezustand live übernehmen
+(für die Ladeplanung und statt der Akku-Eingabe in CarPlay).
+
+1. In Meeterz: Einstellungen → App → E-Auto → **Live-Daten** → „Live-Daten verbinden“.
+2. Die angezeigte **Server-Adresse** in `meeterz_url` und die **Geräte-ID** in `meeterz_device_id` eintragen.
+3. Falls kein ABRP genutzt wird: die Fahrgestellnummer in `vin` eintragen (sonst gilt `abrp_vin`).
+4. Add-on neu starten. Im Log erscheint „Meeterz Live-Daten aktiv“.
+
+Technisch nutzt das Gateway seine OsmAnd-Schnittstelle (wie für Traccar); gesendet werden u. a.
+`soc`, `est_battery_range`, `is_charging`, `power`, `ext_temp`, `odometer`, `speed`, `lat`/`lon`.
+Beim Fahren etwa alle 30 Sekunden, geparkt deutlich seltener. Die Geräte-ID ist geheim – wer sie kennt,
+kann Werte für dein Konto schreiben (aber nichts lesen). In der App lässt sich jederzeit eine neue erzeugen.
