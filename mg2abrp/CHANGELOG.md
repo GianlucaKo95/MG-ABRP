@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+- Neu: Restladezeit laut Auto an Meeterz (wird per MQTT vom Gateway mitgelesen, da die OsmAnd-Schnittstelle sie nicht enthält).
+
 ## 1.1.0
 - Neu: Live-Daten an Meeterz (Akkustand, Reichweite, Laden, Außentemperatur, Position).
   Optionen `meeterz_url` und `meeterz_device_id` (beides aus der Meeterz-App: Einstellungen → E-Auto → Live-Daten).

@@ -91,6 +91,25 @@ if [ -n "$ABRP_USER_TOKEN" ]; then
   echo "[INFO] ABRP Telemetrie aktiv fuer VIN: ${ABRP_VIN}"
 fi
 
+# Meeterz: Restladezeit laut Auto. Das Gateway schickt sie nicht ueber OsmAnd, veroeffentlicht sie aber per MQTT
+# (<topic>/<user>/vehicles/<vin>/drivetrain/remainingChargingTime, Sekunden). Mitlesen und einzeln weiterreichen.
+if [ -n "$OSMAND_DEVICE_ID" ]; then
+  (
+    SUB_ARGS=(-h "$MQTT_HOST" -p "${MQTT_PORT_VAL:-1883}" -t "+/+/vehicles/${VIN_VAL}/drivetrain/remainingChargingTime")
+    [ -n "$MQTT_USERNAME" ] && SUB_ARGS+=(-u "$MQTT_USERNAME")
+    [ -n "$MQTT_PASSWORD_VAL" ] && SUB_ARGS+=(-P "$MQTT_PASSWORD_VAL")
+    while true; do
+      mosquitto_sub "${SUB_ARGS[@]}" | while read -r SECONDS_LEFT; do
+        curl -fsS -m 15 -X POST "${MEETERZ_URL}?id=${MEETERZ_DEVICE_ID}&remaining_charging_time=${SECONDS_LEFT}" >/dev/null \
+          || echo "[WARN] Meeterz: Restladezeit nicht gesendet"
+      done
+      echo "[WARN] Meeterz: MQTT-Verbindung fuer die Restladezeit getrennt - neuer Versuch in 30 s"
+      sleep 30
+    done
+  ) &
+  echo "[INFO] Meeterz Restladezeit wird per MQTT mitgelesen"
+fi
+
 # Kein fest angenommener Skriptname: fuehrt das vom Basis-Image
 # ererbte CMD aus (siehe Dockerfile-Kommentar).
 exec "$@"

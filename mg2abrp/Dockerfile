@@ -18,7 +18,7 @@ USER root
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends jq ca-certificates && \
+    apt-get install -y --no-install-recommends jq ca-certificates curl mosquitto-clients && \
     rm -rf /var/lib/apt/lists/*
 
 COPY run.sh /run.sh
