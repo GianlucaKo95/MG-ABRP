@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0
+- Neu: Ladeziel des Autos an Meeterz (Restladezeit und Ladeziel passen damit zur Anzeige im Auto).
+
 ## 1.2.0
 - Neu: Restladezeit laut Auto an Meeterz (wird per MQTT vom Gateway mitgelesen, da die OsmAnd-Schnittstelle sie nicht enthält).
 
